@@ -1,7 +1,8 @@
 function __fzf_find_file -d "List files and folders"
     set -l commandline (__fzf_parse_commandline)
-    set -l dir $commandline[1]
-    set -l fzf_query $commandline[2]
+    set -l orig_dir $commandline[1]
+    set -l dir $commandline[2]
+    set -l fzf_query $commandline[3]
 
     set -q FZF_FIND_FILE_COMMAND
     or set -l FZF_FIND_FILE_COMMAND "
@@ -22,7 +23,15 @@ function __fzf_find_file -d "List files and folders"
     end
 
     for result in $results
-        commandline -it -- (string escape $result)
+        if test "$dir" = "."
+            commandline -it -- (string escape $result)
+        else
+            commandline -it -- $orig_dir
+            if string match -qv -- "/*" $result; and string match -qv -- "*/" $orig_dir
+                commandline -it -- '/'
+            end
+            commandline -it -- (string escape $result)
+        end
         commandline -it -- " "
     end
     commandline -f repaint

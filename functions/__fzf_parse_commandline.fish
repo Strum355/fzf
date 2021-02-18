@@ -18,6 +18,7 @@ function __fzf_parse_commandline -d 'Parse the current command line token and re
         end
     end
 
+    echo (commandline -t)
     echo $dir
     echo $fzf_query
 end
